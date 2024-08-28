@@ -73,7 +73,33 @@ namespace PlayKalimbaWithKeyboard
 
                     Console.WriteLine("Arduino gets: " + processNote(note.NoteName, note.Octave));
 
-                    _serialPort.Write(processNote(note.NoteName, note.Octave) + ";");
+                    try
+                    {
+                        _serialPort.WriteLine(processNote(note.NoteName, note.Octave) + ";");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Got exception: " + ex.InnerException);
+                    } 
+                }
+            }
+
+            if (e.Event.EventType.Equals(MidiEventType.NoteOff))
+            {
+                if (_serialPort.IsOpen)
+                {
+                    Melanchall.DryWetMidi.MusicTheory.Note note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOffEvent)e.Event).NoteNumber);
+
+                    Console.WriteLine("Arduino gets off: " + processNote(note.NoteName, note.Octave));
+
+                    try
+                    {
+                        _serialPort.WriteLine("s" + processNote(note.NoteName, note.Octave) + ";");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Got exception: " + ex.InnerException);
+                    }
                 }
             }
         }
@@ -108,7 +134,7 @@ namespace PlayKalimbaWithKeyboard
 
                 // Set the read/write timeouts
                 _serialPort.ReadTimeout = 500;
-                _serialPort.WriteTimeout = 500;
+                _serialPort.WriteTimeout = 1000;
 
                 try
                 {
