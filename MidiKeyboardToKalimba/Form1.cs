@@ -26,27 +26,34 @@ namespace PlayKalimbaWithKeyboard
         public Form1()
         {
             InitializeComponent();
+            refreshMidiDevicesAndSerialPortsDropDowns();
         }
 
-        static SerialPort _serialPort;
+        private SerialPort _serialPort;
+        private InputDevice _inputDevice;
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            cbMidiDevices.Items.Clear();
+            refreshMidiDevicesAndSerialPortsDropDowns();
+        }
+
+        private void refreshMidiDevicesAndSerialPortsDropDowns()
+        {
+            cbMidiDevices.DataSource = null;
             List<ComboboxItem> midiDevicesComboBoxItems = new List<ComboboxItem>();
 
             foreach (InputDevice inputDevice in InputDevice.GetAll())
             {
-                midiDevicesComboBoxItems.Add(new ComboboxItem {Name = inputDevice.Name, Value = inputDevice.Id });
+                midiDevicesComboBoxItems.Add(new ComboboxItem { Name = inputDevice.Name, Value = inputDevice.Id });
             }
 
             cbMidiDevices.DataSource = midiDevicesComboBoxItems;
             cbMidiDevices.DisplayMember = "Name";
-            cbMidiDevices.ValueMember = "Value";      
+            cbMidiDevices.ValueMember = "Value";
             cbMidiDevices.DropDownStyle = ComboBoxStyle.DropDownList;
 
 
-            cbSerialPorts.Items.Clear();
+            cbSerialPorts.DataSource = null;
             List<ComboboxItem> serialPortsComboBoxItems = new List<ComboboxItem>();
 
             foreach (string serialPortName in SerialPort.GetPortNames())
@@ -58,6 +65,8 @@ namespace PlayKalimbaWithKeyboard
             cbSerialPorts.DisplayMember = "Name";
             cbSerialPorts.ValueMember = "Value";
             cbSerialPorts.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            updateButtonsEnabledStates();
         }
 
         private void OnEventReceived(object sender, MidiEventReceivedEventArgs e)
@@ -65,90 +74,110 @@ namespace PlayKalimbaWithKeyboard
             var midiDevice = (MidiDevice)sender;
             Console.WriteLine($"Event received from '{midiDevice.Name}' at {DateTime.Now}: {e.Event}");
 
-            if (e.Event.EventType.Equals(MidiEventType.NoteOn))
+            if (_serialPort == null || !_serialPort.IsOpen)
             {
-                if (_serialPort.IsOpen)
-                {
-                    Melanchall.DryWetMidi.MusicTheory.Note note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOnEvent)e.Event).NoteNumber);
-
-                    Console.WriteLine("Arduino gets: " + processNote(note.NoteName, note.Octave));
-
-                    try
-                    {
-                        _serialPort.WriteLine(processNote(note.NoteName, note.Octave) + ";");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Got exception: " + ex.InnerException);
-                    } 
-                }
+                return;
             }
 
-            if (e.Event.EventType.Equals(MidiEventType.NoteOff))
+            string notePrefix = "";
+
+            Melanchall.DryWetMidi.MusicTheory.Note note;
+
+            if (e.Event.EventType.Equals(MidiEventType.NoteOn))
             {
-                if (_serialPort.IsOpen)
-                {
-                    Melanchall.DryWetMidi.MusicTheory.Note note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOffEvent)e.Event).NoteNumber);
+                notePrefix = "";
+                note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOnEvent)e.Event).NoteNumber);
+            }
 
-                    Console.WriteLine("Arduino gets off: " + processNote(note.NoteName, note.Octave));
+            else if (e.Event.EventType.Equals(MidiEventType.NoteOff))
+            {
+                // Lowercase "s" means silence note
+                notePrefix = "s";
+                note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOffEvent)e.Event).NoteNumber);
+            }
+            else
+            {
+                // We do not handle other midi events
+                return;
+            }
 
-                    try
-                    {
-                        _serialPort.WriteLine("s" + processNote(note.NoteName, note.Octave) + ";");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Got exception: " + ex.InnerException);
-                    }
-                }
+             
+
+            int processedNote = processNote(note.NoteName, note.Octave);
+            Console.WriteLine("Arduino gets: " + notePrefix + processedNote + ";");
+
+            try
+            {
+                _serialPort.WriteLine(notePrefix + processedNote + ";");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Got exception: " + ex.InnerException);
             }
         }
 
         private void btnConnectMidi_Click(object sender, EventArgs e)
         {
-            if (cbMidiDevices.Items.Count > 0)
+            if (cbMidiDevices.Items.Count == 0)
             {
-                InputDevice inputDevice = InputDevice.GetById(((ComboboxItem)cbMidiDevices.SelectedItem).Value);
-                inputDevice.EventReceived += OnEventReceived;
-                inputDevice.StartEventsListening();
+                MessageBox.Show("No Midi Device selected", "Error");
+                return;
             }
-            else
+
+            _inputDevice = InputDevice.GetById(((ComboboxItem)cbMidiDevices.SelectedItem).Value);
+            _inputDevice.EventReceived += OnEventReceived;
+
+            try
             {
-                MessageBox.Show("Error", "No Midi Device selected");
+                _inputDevice.StartEventsListening();
+                btnConnectMidi.BackColor = Color.LightGreen;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Midi Device could not be selected: '" + ex.Message + "'", "Error");
+                btnConnectMidi.BackColor = Color.Red;
+            }
+
+            updateButtonsEnabledStates();
         }
 
         private void btnConnectSerial_Click(object sender, EventArgs e)
         {
-            if (cbSerialPorts.Items.Count > 0)
+            if (cbSerialPorts.Items.Count == 0)
             {
-                _serialPort = new SerialPort();
+                MessageBox.Show("No serial port selected", "Error");
+                btnConnectSerial.BackColor = Color.Red;
 
-                // Allow the user to set the appropriate properties.
-                _serialPort.PortName = ((ComboboxItem)cbSerialPorts.SelectedItem).Name;
-                _serialPort.BaudRate = 115200;
-                _serialPort.Parity = 0;
-                _serialPort.DataBits = 8;
-                _serialPort.StopBits = StopBits.One;
-                _serialPort.Handshake = 0;
-
-                // Set the read/write timeouts
-                _serialPort.ReadTimeout = 500;
-                _serialPort.WriteTimeout = 1000;
-
-                try
-                {
-                    _serialPort.Open();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error", "Could not open serial port : " + ex.Message);
-                }
+                return;
             }
-            else
+
+            _serialPort = new SerialPort();
+
+            // Allow the user to set the appropriate properties.
+            _serialPort.PortName = ((ComboboxItem)cbSerialPorts.SelectedItem).Name;
+            _serialPort.BaudRate = 115200;
+            _serialPort.Parity = 0;
+            _serialPort.DataBits = 8;
+            _serialPort.StopBits = StopBits.One;
+            _serialPort.Handshake = 0;
+
+            // Set the read/write timeouts
+            _serialPort.ReadTimeout = 500;
+            _serialPort.WriteTimeout = 1000;
+
+            try
             {
-                MessageBox.Show("Error", "No serial port selected");
+                _serialPort.Open();
+                btnConnectSerial.BackColor = Color.LightGreen;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open serial port : " + ex.Message, "Error");
+                _serialPort = null;
+                btnConnectSerial.BackColor = Color.Red;
+            }
+
+            updateButtonsEnabledStates();
         }
 
         int unplayableCounter = 0;
@@ -235,6 +264,63 @@ namespace PlayKalimbaWithKeyboard
 
                 default: return 0;
             }
+        }
+
+        private void updateButtonsEnabledStates()
+        {
+            if (_inputDevice != null || _serialPort != null)
+            {
+                btnRefresh.Enabled = false;
+            }
+            else
+            {
+                btnRefresh.Enabled = true;
+            }
+
+            if (_serialPort != null)
+            {
+                cbSerialPorts.Enabled = false;
+                btnConnectSerial.Enabled = false;
+                btnDisconnectSerial.Enabled = true;
+            }
+            else
+            {
+                cbSerialPorts.Enabled = true;
+                btnConnectSerial.Enabled = true;
+                btnDisconnectSerial.Enabled = false;
+            }
+
+            if (_inputDevice != null)
+            {
+                cbMidiDevices.Enabled = false;
+                btnConnectMidi.Enabled = false;
+                btnDisconnectMidi.Enabled = true;
+            }
+            else
+            {
+                cbMidiDevices.Enabled = true;
+                btnConnectMidi.Enabled = true;
+                btnDisconnectMidi.Enabled = false;
+            }
+        }
+
+        private void btnDisconnectMidi_Click(object sender, EventArgs e)
+        {
+            _inputDevice.StopEventsListening();
+            _inputDevice.EventReceived -= OnEventReceived;
+            _inputDevice.Dispose();
+            _inputDevice = null;
+
+            btnConnectMidi.BackColor = Color.LightGray;
+            updateButtonsEnabledStates();
+        }
+
+        private void btnDisconnectSerial_Click(object sender, EventArgs e)
+        {
+            _serialPort.Close();
+            _serialPort = null;
+            btnConnectSerial.BackColor = Color.LightGray;
+            updateButtonsEnabledStates();
         }
     }
 }
