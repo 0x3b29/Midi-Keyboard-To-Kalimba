@@ -30,7 +30,11 @@ namespace PlayKalimbaWithKeyboard
         }
 
         private SerialPort _serialPort;
+        private SerialPort _serialPort2;
         private InputDevice _inputDevice;
+
+        private const int _noteOctaveOffset = -1;
+        private const int _kalimbaBaseOctave = 4;
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
@@ -52,7 +56,6 @@ namespace PlayKalimbaWithKeyboard
             cbMidiDevices.ValueMember = "Value";
             cbMidiDevices.DropDownStyle = ComboBoxStyle.DropDownList;
 
-
             cbSerialPorts.DataSource = null;
             List<ComboboxItem> serialPortsComboBoxItems = new List<ComboboxItem>();
 
@@ -66,6 +69,19 @@ namespace PlayKalimbaWithKeyboard
             cbSerialPorts.ValueMember = "Value";
             cbSerialPorts.DropDownStyle = ComboBoxStyle.DropDownList;
 
+            cbSerialPorts2.DataSource = null;
+            List<ComboboxItem> serialPortsComboBoxItems2 = new List<ComboboxItem>();
+
+            foreach (string serialPortName in SerialPort.GetPortNames())
+            {
+                serialPortsComboBoxItems2.Add(new ComboboxItem { Name = serialPortName, Value = -1 });
+            }
+
+            cbSerialPorts2.DataSource = serialPortsComboBoxItems2;
+            cbSerialPorts2.DisplayMember = "Name";
+            cbSerialPorts2.ValueMember = "Value";
+            cbSerialPorts2.DropDownStyle = ComboBoxStyle.DropDownList;
+
             updateButtonsEnabledStates();
         }
 
@@ -73,11 +89,6 @@ namespace PlayKalimbaWithKeyboard
         {
             var midiDevice = (MidiDevice)sender;
             Console.WriteLine($"Event received from '{midiDevice.Name}' at {DateTime.Now}: {e.Event}");
-
-            if (_serialPort == null || !_serialPort.IsOpen)
-            {
-                return;
-            }
 
             string notePrefix = "";
 
@@ -101,18 +112,42 @@ namespace PlayKalimbaWithKeyboard
                 return;
             }
 
-             
+            int adjustedOctave = note.Octave + _noteOctaveOffset;
+            int processedNote = processNote(note.NoteName, adjustedOctave);
 
-            int processedNote = processNote(note.NoteName, note.Octave);
-            Console.WriteLine("Arduino gets: " + notePrefix + processedNote + ";");
-
-            try
+            if (isMajorNote(note.NoteName))
             {
-                _serialPort.WriteLine(notePrefix + processedNote + ";");
+                if (_serialPort == null || !_serialPort.IsOpen)
+                {
+                    return;
+                }
+
+                try
+                {
+                    Console.WriteLine("Major Arduino gets: " + notePrefix + processedNote + ";");
+                    _serialPort.WriteLine(notePrefix + processedNote + ";");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Got exception: " + ex.InnerException);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine("Got exception: " + ex.InnerException);
+                if (_serialPort2 == null || !_serialPort2.IsOpen)
+                {
+                    return;
+                }
+
+                try
+                {
+                    Console.WriteLine("Non Diatonic Arduino gets: " + notePrefix + processedNote + ";");
+                    _serialPort2.WriteLine(notePrefix + processedNote + ";");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Got exception: " + ex.InnerException);
+                }
             }
         }
 
@@ -184,70 +219,92 @@ namespace PlayKalimbaWithKeyboard
         int tooLowCounter = 0;
         int tooHighCounter = 0;
         int goodNotesCounter = 0;
-        int baseOctave = 7;
-        bool wrapNotes = false;
+        
+        bool wrapTines = false;
 
-        private int processNote(NoteName noteName, int noteOctave)
+        private int processNote(NoteName noteName, int dawAdjustedOctave)
         {
-            int kalimbaMappedNote = getKalimbaMappedNote(noteName);
+            // Value from 1 = C to 7 = B
+            int mappedNoteNumber = getKalimbaMappedNote(noteName);
 
-            if (kalimbaMappedNote == 0)
+            // Valid octaves are 0, 1 and 2, but 2 only partially (C, D and E)
+            int kalimbaOctave = dawAdjustedOctave - _kalimbaBaseOctave;
+
+            // Valid tines are 1 = C4 to 17 = E6
+            int kalimbaTine = mappedNoteNumber + (kalimbaOctave * 7);
+
+            // Wrap around to valid tines (1 to 17)
+            int wrappedTine = kalimbaTine;
+
+            // Wrap the tines around the valid range from 1 (C4) to 17 (E6)
+            if (wrappedTine < 1)
             {
-                unplayableCounter++;
-
-                // We can never make unplayable notes work because of how a Kalimba is arranged
-
-                return 0;
+                // Wrap down into valid range by adding 14 (2 full octaves of 7 notes)
+                while (wrappedTine < 1)
+                {
+                    wrappedTine += 14;  // Add 14 to wrap into the higher valid octave
+                }
+            }
+            else if (wrappedTine > 17)
+            {
+                // Wrap up into valid range by subtracting 14 (2 octaves)
+                while (wrappedTine > 17)
+                {
+                    wrappedTine -= 14;  // Subtract 14 to wrap back into the valid range
+                }
             }
 
-            if (kalimbaMappedNote + ((noteOctave - baseOctave) * 7) < 1)
+            Console.WriteLine("kalimbaTine: " + kalimbaTine + ", wrappedTine: " + wrappedTine + ", dawAdjustedOctave: " + dawAdjustedOctave);
+
+            bool isNoteBelowKalimbaRange = kalimbaTine < 1;
+            bool isNoteAboveKalimbaRange = kalimbaTine > 17;
+
+            if (isNoteBelowKalimbaRange)
             {
                 tooLowCounter++;
-
-                if (wrapNotes)
-                {
-                    Console.WriteLine("kalimbaMappedNote(" + kalimbaMappedNote + ") + ((noteOctave(" + noteOctave + ") - baseOctave(" + baseOctave + ")) * 7)(" + (kalimbaMappedNote + ((noteOctave - baseOctave) * 7)) + ") < 1");
-
-                    // Adjust the octave of the note upwards until the note is in the playable range
-                    while (kalimbaMappedNote + ((noteOctave - baseOctave) * 7) < 1)
-                    {
-
-                        noteOctave++;
-
-                        Console.WriteLine("kalimbaMappedNote(" + kalimbaMappedNote + ") + ((noteOctave(" + noteOctave + ") - baseOctave(" + baseOctave + ")) * 7)(" + (kalimbaMappedNote + ((noteOctave - baseOctave) * 7)) + ") < 1");
-                    }
-                }
-                else
-                {
-                    // If we dont wrap the notes around, we are done with this note
-                    return 0;
-                }
             }
-            else if (kalimbaMappedNote + ((noteOctave - baseOctave) * 7) > 17)
+            else if (isNoteAboveKalimbaRange)
             {
                 tooHighCounter++;
-
-                if (wrapNotes)
-                {
-                    // Adjust the octave of the note downwards until the note is in the playable range
-                    while (kalimbaMappedNote + ((noteOctave - baseOctave) * 7) > 17)
-                    {
-                        noteOctave--;
-                    }
-                }
-                else
-                {
-                    // If we dont wrap the notes around, we are done with this note
-                    return 0;
-                }
             }
             else
             {
                 goodNotesCounter++;
             }
 
+            if (isNoteBelowKalimbaRange || isNoteAboveKalimbaRange)
+            {
+                if (wrapTines)
+                {
+                    return wrappedTine;
+                }
+                else
+                {
+                    // If we dont wrap the notes around, we are done with this note
+                    return 0;
+                }
+            }
+
             // If we got here, we either had a good note, or we wrapped a note that was too low or too high
-            return (kalimbaMappedNote + ((noteOctave - baseOctave) * 7));
+            return kalimbaTine;
+        }
+
+        private bool isMajorNote(NoteName noteName)
+        {
+            switch (noteName)
+            {
+                case NoteName.C:
+                case NoteName.D:
+                case NoteName.E:
+                case NoteName.F:
+                case NoteName.G:
+                case NoteName.A:
+                case NoteName.B:
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         private int getKalimbaMappedNote(NoteName noteName)
@@ -262,13 +319,19 @@ namespace PlayKalimbaWithKeyboard
                 case NoteName.A: return 6;
                 case NoteName.B: return 7;
 
+                case NoteName.CSharp: return 1;
+                case NoteName.DSharp: return 2;
+                case NoteName.FSharp: return 4;
+                case NoteName.GSharp: return 5;
+                case NoteName.ASharp: return 6;
+
                 default: return 0;
             }
         }
 
         private void updateButtonsEnabledStates()
         {
-            if (_inputDevice != null || _serialPort != null)
+            if (_inputDevice != null || _serialPort != null || cbSerialPorts2 != null)
             {
                 btnRefresh.Enabled = false;
             }
@@ -289,6 +352,21 @@ namespace PlayKalimbaWithKeyboard
                 btnConnectSerial.Enabled = true;
                 btnDisconnectSerial.Enabled = false;
             }
+
+            if (_serialPort2 != null)
+            {
+                cbSerialPorts2.Enabled = false;
+                btnConnectSerial2.Enabled = false;
+                btnDisconnectSerial2.Enabled = true;
+            }
+            else
+            {
+                cbSerialPorts2.Enabled = true;
+                btnConnectSerial2.Enabled = true;
+                btnDisconnectSerial2.Enabled = false;
+            }
+
+
 
             if (_inputDevice != null)
             {
@@ -320,6 +398,53 @@ namespace PlayKalimbaWithKeyboard
             _serialPort.Close();
             _serialPort = null;
             btnConnectSerial.BackColor = Color.LightGray;
+            updateButtonsEnabledStates();
+        }
+
+        private void btnConnectSerial2_Click(object sender, EventArgs e)
+        {
+            if (cbSerialPorts.Items.Count == 0)
+            {
+                MessageBox.Show("No serial port selected", "Error");
+                btnConnectSerial.BackColor = Color.Red;
+
+                return;
+            }
+
+            _serialPort2 = new SerialPort();
+
+            // Allow the user to set the appropriate properties.
+            _serialPort2.PortName = ((ComboboxItem)cbSerialPorts2.SelectedItem).Name;
+            _serialPort2.BaudRate = 115200;
+            _serialPort2.Parity = 0;
+            _serialPort2.DataBits = 8;
+            _serialPort2.StopBits = StopBits.One;
+            _serialPort2.Handshake = 0;
+
+            // Set the read/write timeouts
+            _serialPort2.ReadTimeout = 500;
+            _serialPort2.WriteTimeout = 1000;
+
+            try
+            {
+                _serialPort2.Open();
+                btnConnectSerial2.BackColor = Color.LightGreen;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open serial port : " + ex.Message, "Error");
+                _serialPort2 = null;
+                btnConnectSerial2.BackColor = Color.Red;
+            }
+
+            updateButtonsEnabledStates();
+        }
+
+        private void btnDisconnectSerial2_Click(object sender, EventArgs e)
+        {
+            _serialPort2.Close();
+            _serialPort2 = null;
+            btnConnectSerial2.BackColor = Color.LightGray;
             updateButtonsEnabledStates();
         }
     }
