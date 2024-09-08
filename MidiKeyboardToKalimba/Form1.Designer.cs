@@ -48,7 +48,7 @@
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(12, 313);
+            this.btnRefresh.Location = new System.Drawing.Point(12, 316);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(480, 33);
             this.btnRefresh.TabIndex = 0;
@@ -104,7 +104,7 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(296, 44);
+            this.label1.Size = new System.Drawing.Size(197, 29);
             this.label1.TabIndex = 5;
             this.label1.Text = "Midi Input Device";
             // 
@@ -114,9 +114,9 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(12, 109);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(594, 44);
+            this.label2.Size = new System.Drawing.Size(410, 44);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Port for the major scale Kalimba Bot";
+            this.label2.Text = "Major scale Kalimba Bot";
             // 
             // btnDisconnectMidi
             // 
@@ -157,9 +157,9 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(10, 209);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(606, 44);
+            this.label3.Size = new System.Drawing.Size(429, 44);
             this.label3.TabIndex = 11;
-            this.label3.Text = "Port for the non-diatonic Kalimba Bot";
+            this.label3.Text = "Non-diatonic Kalimba Bot";
             // 
             // btnConnectSerial2
             // 
@@ -186,7 +186,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(501, 358);
+            this.ClientSize = new System.Drawing.Size(501, 361);
             this.Controls.Add(this.btnDisconnectSerial2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnConnectSerial2);
@@ -200,7 +200,9 @@
             this.Controls.Add(this.cbSerialPorts);
             this.Controls.Add(this.cbMidiDevices);
             this.Controls.Add(this.btnRefresh);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Midi Device To Kalimba";
             this.ResumeLayout(false);

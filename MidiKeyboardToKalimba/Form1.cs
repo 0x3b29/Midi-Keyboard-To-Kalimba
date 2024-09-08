@@ -36,6 +36,12 @@ namespace PlayKalimbaWithKeyboard
         private const int _noteOctaveOffset = -1;
         private const int _kalimbaBaseOctave = 4;
 
+        private int tooLowCounter = 0;
+        private int tooHighCounter = 0;
+        private int goodNotesCounter = 0;
+
+        private bool wrapTines = true;
+
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             refreshMidiDevicesAndSerialPortsDropDowns();
@@ -155,15 +161,15 @@ namespace PlayKalimbaWithKeyboard
         {
             if (cbMidiDevices.Items.Count == 0)
             {
+                btnConnectMidi.BackColor = Color.Red;
                 MessageBox.Show("No Midi Device selected", "Error");
                 return;
             }
 
-            _inputDevice = InputDevice.GetById(((ComboboxItem)cbMidiDevices.SelectedItem).Value);
-            _inputDevice.EventReceived += OnEventReceived;
-
             try
             {
+                _inputDevice = InputDevice.GetById(((ComboboxItem)cbMidiDevices.SelectedItem).Value);
+                _inputDevice.EventReceived += OnEventReceived;
                 _inputDevice.StartEventsListening();
                 btnConnectMidi.BackColor = Color.LightGreen;
             }
@@ -214,13 +220,6 @@ namespace PlayKalimbaWithKeyboard
 
             updateButtonsEnabledStates();
         }
-
-        int unplayableCounter = 0;
-        int tooLowCounter = 0;
-        int tooHighCounter = 0;
-        int goodNotesCounter = 0;
-        
-        bool wrapTines = false;
 
         private int processNote(NoteName noteName, int dawAdjustedOctave)
         {
@@ -331,7 +330,7 @@ namespace PlayKalimbaWithKeyboard
 
         private void updateButtonsEnabledStates()
         {
-            if (_inputDevice != null || _serialPort != null || cbSerialPorts2 != null)
+            if (_inputDevice != null || _serialPort != null || _serialPort2 != null)
             {
                 btnRefresh.Enabled = false;
             }
@@ -384,7 +383,15 @@ namespace PlayKalimbaWithKeyboard
 
         private void btnDisconnectMidi_Click(object sender, EventArgs e)
         {
-            _inputDevice.StopEventsListening();
+            try
+            {
+                _inputDevice.StopEventsListening();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("There was an error stopping the event listening: " + ex.Message);
+            }
+
             _inputDevice.EventReceived -= OnEventReceived;
             _inputDevice.Dispose();
             _inputDevice = null;
