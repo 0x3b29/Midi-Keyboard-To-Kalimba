@@ -36,11 +36,15 @@ namespace PlayKalimbaWithKeyboard
         private const int _noteOctaveOffset = -1;
         private const int _kalimbaBaseOctave = 4;
 
-        private int tooLowCounter = 0;
-        private int tooHighCounter = 0;
-        private int goodNotesCounter = 0;
+        private int majorScaleNotesPlayed = 0;
+        private int majorScaleNotesPerfect = 0;
+        private int majorScaleNotesWrapped = 0;
+        private int majorScaleNotesIgnored = 0;
 
-        private bool wrapTines = true;
+        private int nonDiatonicNotesPlayed = 0;
+        private int nonDiatonicNotesPerfect = 0;
+        private int nonDiatonicNotesWrapped = 0;
+        private int nonDiatonicNotesIgnored = 0;
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
@@ -91,6 +95,37 @@ namespace PlayKalimbaWithKeyboard
             updateButtonsEnabledStates();
         }
 
+        // Generic method to safely update any label from another thread
+        private void UpdateLabelSafely(Label label, string text)
+        {
+            if (label.InvokeRequired)
+            {
+                label.Invoke((MethodInvoker)delegate
+                {
+                    label.Text = text;
+                });
+            }
+            else
+            {
+                label.Text = text;
+            }
+        }
+
+        private void updateNotesCounters()
+        {
+            // Update major scale labels safely
+            UpdateLabelSafely(lblMajorScaleNotesPlayed, majorScaleNotesPlayed.ToString());
+            UpdateLabelSafely(lblMajorScaleNotesPerfect, majorScaleNotesPerfect.ToString());
+            UpdateLabelSafely(lblMajorScaleNotesWrapped, majorScaleNotesWrapped.ToString());
+            UpdateLabelSafely(lblMajorScaleNotesIgnored, majorScaleNotesIgnored.ToString());
+
+            // Update non-diatonic scale labels safely
+            UpdateLabelSafely(lblNonDiatonicNotesPlayed, nonDiatonicNotesPlayed.ToString());
+            UpdateLabelSafely(lblNonDiatonicNotesPerfect, nonDiatonicNotesPerfect.ToString());
+            UpdateLabelSafely(lblNonDiatonicNotesWrapped, nonDiatonicNotesWrapped.ToString());
+            UpdateLabelSafely(lblNonDiatonicNotesIgnored, nonDiatonicNotesIgnored.ToString());
+        }
+
         private void OnEventReceived(object sender, MidiEventReceivedEventArgs e)
         {
             var midiDevice = (MidiDevice)sender;
@@ -99,6 +134,7 @@ namespace PlayKalimbaWithKeyboard
             string notePrefix = "";
 
             Melanchall.DryWetMidi.MusicTheory.Note note;
+            bool isNoteOff = false;
 
             if (e.Event.EventType.Equals(MidiEventType.NoteOn))
             {
@@ -110,6 +146,7 @@ namespace PlayKalimbaWithKeyboard
             {
                 // Lowercase "s" means silence note
                 notePrefix = "s";
+                isNoteOff = true;
                 note = Melanchall.DryWetMidi.MusicTheory.Note.Get(((NoteOffEvent)e.Event).NoteNumber);
             }
             else
@@ -121,7 +158,22 @@ namespace PlayKalimbaWithKeyboard
             int adjustedOctave = note.Octave + _noteOctaveOffset;
             int processedNote = processNote(note.NoteName, adjustedOctave);
 
-            if (isMajorNote(note.NoteName))
+            bool isKalimbaConnected = false;
+            bool isMajorNote = getIsMajorNote(note.NoteName);
+
+            if (isMajorNote && _serialPort != null)
+            {
+                isKalimbaConnected = true;
+            }
+            else if (!isMajorNote && _serialPort2 != null)
+            {
+                isKalimbaConnected = true;
+            }
+
+            adjustCounters(note.NoteName, adjustedOctave, isMajorNote, isNoteOff, isKalimbaConnected);
+            updateNotesCounters();
+
+            if (isMajorNote)
             {
                 if (_serialPort == null || !_serialPort.IsOpen)
                 {
@@ -221,6 +273,85 @@ namespace PlayKalimbaWithKeyboard
             updateButtonsEnabledStates();
         }
 
+        private void adjustCounters(NoteName noteName, int dawAdjustedOctave, bool isMajorNote, bool isNoteOff, bool isKalimbaConnected)
+        {
+            if (isNoteOff)
+            {
+                return;
+            }
+
+            if (!isKalimbaConnected)
+            {
+                if (isMajorNote)
+                {
+                    majorScaleNotesIgnored++;
+                }
+                else
+                {
+                    nonDiatonicNotesIgnored++;
+                }
+
+                return;
+            }
+
+            // Value from 1 = C to 7 = B
+            int mappedNoteNumber = getKalimbaMappedNote(noteName);
+
+            // Valid octaves are 0, 1 and 2, but 2 only partially (C, D and E)
+            int kalimbaOctave = dawAdjustedOctave - _kalimbaBaseOctave;
+
+            // Valid tines are 1 = C4 to 17 = E6
+            int kalimbaTine = mappedNoteNumber + (kalimbaOctave * 7);
+
+            bool needsWrapping = false;
+
+            if (kalimbaTine < 1 || kalimbaTine > 17)
+            {
+                needsWrapping = true;
+            }
+
+            if (needsWrapping)
+            {
+                if (cbxWrapNotes.Checked)
+                {
+                    if (isMajorNote)
+                    {
+                        majorScaleNotesWrapped++;
+                        majorScaleNotesPlayed++;
+                    }
+                    else
+                    {
+                        nonDiatonicNotesWrapped++;
+                        nonDiatonicNotesPlayed++;
+                    }
+                }
+                else
+                {
+                    if (isMajorNote)
+                    {
+                        majorScaleNotesIgnored++;
+                    }
+                    else
+                    {
+                        nonDiatonicNotesIgnored++;
+                    }
+                }
+            }
+            else
+            {
+                if (isMajorNote)
+                {
+                    majorScaleNotesPerfect++;
+                    majorScaleNotesPlayed++;
+                }
+                else
+                {
+                    nonDiatonicNotesPerfect++;
+                    nonDiatonicNotesPlayed++;
+                }
+            }
+        }
+
         private int processNote(NoteName noteName, int dawAdjustedOctave)
         {
             // Value from 1 = C to 7 = B
@@ -258,22 +389,9 @@ namespace PlayKalimbaWithKeyboard
             bool isNoteBelowKalimbaRange = kalimbaTine < 1;
             bool isNoteAboveKalimbaRange = kalimbaTine > 17;
 
-            if (isNoteBelowKalimbaRange)
-            {
-                tooLowCounter++;
-            }
-            else if (isNoteAboveKalimbaRange)
-            {
-                tooHighCounter++;
-            }
-            else
-            {
-                goodNotesCounter++;
-            }
-
             if (isNoteBelowKalimbaRange || isNoteAboveKalimbaRange)
             {
-                if (wrapTines)
+                if (cbxWrapNotes.Checked)
                 {
                     return wrappedTine;
                 }
@@ -288,7 +406,7 @@ namespace PlayKalimbaWithKeyboard
             return kalimbaTine;
         }
 
-        private bool isMajorNote(NoteName noteName)
+        private bool getIsMajorNote(NoteName noteName)
         {
             switch (noteName)
             {
@@ -344,12 +462,22 @@ namespace PlayKalimbaWithKeyboard
                 cbSerialPorts.Enabled = false;
                 btnConnectSerial.Enabled = false;
                 btnDisconnectSerial.Enabled = true;
+
+                btnMajorScaleUp.Enabled = true;
+                btnMajorScaleCenter.Enabled = true;
+                btnMajorScaleDown.Enabled = true;
+                btnMajorScaleStairs.Enabled = true;
             }
             else
             {
                 cbSerialPorts.Enabled = true;
                 btnConnectSerial.Enabled = true;
                 btnDisconnectSerial.Enabled = false;
+
+                btnMajorScaleUp.Enabled = false;
+                btnMajorScaleCenter.Enabled = false;
+                btnMajorScaleDown.Enabled = false;
+                btnMajorScaleStairs.Enabled = false;
             }
 
             if (_serialPort2 != null)
@@ -357,15 +485,23 @@ namespace PlayKalimbaWithKeyboard
                 cbSerialPorts2.Enabled = false;
                 btnConnectSerial2.Enabled = false;
                 btnDisconnectSerial2.Enabled = true;
+
+                btnNonDiatonicUp.Enabled = true;
+                btnNonDiatonicCenter.Enabled = true;
+                btnNonDiatonicDown.Enabled = true;
+                btnNonDiatonicStairs.Enabled = true;
             }
             else
             {
                 cbSerialPorts2.Enabled = true;
                 btnConnectSerial2.Enabled = true;
                 btnDisconnectSerial2.Enabled = false;
+
+                btnNonDiatonicUp.Enabled = false;
+                btnNonDiatonicCenter.Enabled = false;
+                btnNonDiatonicDown.Enabled = false;
+                btnNonDiatonicStairs.Enabled = false;
             }
-
-
 
             if (_inputDevice != null)
             {
@@ -453,6 +589,46 @@ namespace PlayKalimbaWithKeyboard
             _serialPort2 = null;
             btnConnectSerial2.BackColor = Color.LightGray;
             updateButtonsEnabledStates();
+        }
+
+        private void btnMajorScaleUp_Click(object sender, EventArgs e)
+        {
+            _serialPort.WriteLine("u;");
+        }
+
+        private void btnMajorScaleCenter_Click(object sender, EventArgs e)
+        {
+            _serialPort.WriteLine("c;");
+        }
+
+        private void btnMajorScaleDown_Click(object sender, EventArgs e)
+        {
+            _serialPort.WriteLine("d;");
+        }
+
+        private void btnMajorScaleStairs_Click(object sender, EventArgs e)
+        {
+            _serialPort.WriteLine("x;");
+        }
+
+        private void btnNonDiatonicUp_Click(object sender, EventArgs e)
+        {
+            _serialPort2.WriteLine("u;");
+        }
+
+        private void btnNonDiatonicCenter_Click(object sender, EventArgs e)
+        {
+            _serialPort2.WriteLine("c;");
+        }
+
+        private void btnNonDiatonicDown_Click(object sender, EventArgs e)
+        {
+            _serialPort2.WriteLine("d;");
+        }
+
+        private void btnNonDiatonicStairs_Click(object sender, EventArgs e)
+        {
+            _serialPort2.WriteLine("x;");
         }
     }
 }
