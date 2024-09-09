@@ -74,7 +74,7 @@
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRefresh.Location = new System.Drawing.Point(11, 337);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(2);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(310, 21);
             this.btnRefresh.TabIndex = 0;
@@ -88,7 +88,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbMidiDevices.FormattingEnabled = true;
             this.cbMidiDevices.Location = new System.Drawing.Point(12, 37);
-            this.cbMidiDevices.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbMidiDevices.Margin = new System.Windows.Forms.Padding(2);
             this.cbMidiDevices.Name = "cbMidiDevices";
             this.cbMidiDevices.Size = new System.Drawing.Size(151, 21);
             this.cbMidiDevices.TabIndex = 1;
@@ -99,7 +99,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbSerialPorts.FormattingEnabled = true;
             this.cbSerialPorts.Location = new System.Drawing.Point(12, 114);
-            this.cbSerialPorts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbSerialPorts.Margin = new System.Windows.Forms.Padding(2);
             this.cbSerialPorts.Name = "cbSerialPorts";
             this.cbSerialPorts.Size = new System.Drawing.Size(151, 21);
             this.cbSerialPorts.TabIndex = 2;
@@ -108,7 +108,7 @@
             // 
             this.btnConnectMidi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnConnectMidi.Location = new System.Drawing.Point(167, 37);
-            this.btnConnectMidi.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnConnectMidi.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnectMidi.Name = "btnConnectMidi";
             this.btnConnectMidi.Size = new System.Drawing.Size(76, 21);
             this.btnConnectMidi.TabIndex = 3;
@@ -120,7 +120,7 @@
             // 
             this.btnConnectSerial.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnConnectSerial.Location = new System.Drawing.Point(167, 114);
-            this.btnConnectSerial.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnConnectSerial.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnectSerial.Name = "btnConnectSerial";
             this.btnConnectSerial.Size = new System.Drawing.Size(76, 21);
             this.btnConnectSerial.TabIndex = 4;
@@ -154,7 +154,7 @@
             // 
             this.btnDisconnectMidi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDisconnectMidi.Location = new System.Drawing.Point(247, 37);
-            this.btnDisconnectMidi.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDisconnectMidi.Margin = new System.Windows.Forms.Padding(2);
             this.btnDisconnectMidi.Name = "btnDisconnectMidi";
             this.btnDisconnectMidi.Size = new System.Drawing.Size(76, 21);
             this.btnDisconnectMidi.TabIndex = 7;
@@ -166,7 +166,7 @@
             // 
             this.btnDisconnectSerial.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDisconnectSerial.Location = new System.Drawing.Point(247, 114);
-            this.btnDisconnectSerial.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDisconnectSerial.Margin = new System.Windows.Forms.Padding(2);
             this.btnDisconnectSerial.Name = "btnDisconnectSerial";
             this.btnDisconnectSerial.Size = new System.Drawing.Size(76, 21);
             this.btnDisconnectSerial.TabIndex = 8;
@@ -178,7 +178,7 @@
             // 
             this.btnDisconnectSerial2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDisconnectSerial2.Location = new System.Drawing.Point(245, 241);
-            this.btnDisconnectSerial2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDisconnectSerial2.Margin = new System.Windows.Forms.Padding(2);
             this.btnDisconnectSerial2.Name = "btnDisconnectSerial2";
             this.btnDisconnectSerial2.Size = new System.Drawing.Size(76, 21);
             this.btnDisconnectSerial2.TabIndex = 12;
@@ -201,7 +201,7 @@
             // 
             this.btnConnectSerial2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnConnectSerial2.Location = new System.Drawing.Point(165, 241);
-            this.btnConnectSerial2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnConnectSerial2.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnectSerial2.Name = "btnConnectSerial2";
             this.btnConnectSerial2.Size = new System.Drawing.Size(76, 21);
             this.btnConnectSerial2.TabIndex = 10;
@@ -215,7 +215,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cbSerialPorts2.FormattingEnabled = true;
             this.cbSerialPorts2.Location = new System.Drawing.Point(12, 242);
-            this.cbSerialPorts2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbSerialPorts2.Margin = new System.Windows.Forms.Padding(2);
             this.cbSerialPorts2.Name = "cbSerialPorts2";
             this.cbSerialPorts2.Size = new System.Drawing.Size(149, 21);
             this.cbSerialPorts2.TabIndex = 9;
@@ -224,7 +224,7 @@
             // 
             this.btnMajorScaleUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMajorScaleUp.Location = new System.Drawing.Point(224, 89);
-            this.btnMajorScaleUp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMajorScaleUp.Margin = new System.Windows.Forms.Padding(2);
             this.btnMajorScaleUp.Name = "btnMajorScaleUp";
             this.btnMajorScaleUp.Size = new System.Drawing.Size(21, 21);
             this.btnMajorScaleUp.TabIndex = 13;
@@ -236,7 +236,7 @@
             // 
             this.btnMajorScaleCenter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMajorScaleCenter.Location = new System.Drawing.Point(249, 89);
-            this.btnMajorScaleCenter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMajorScaleCenter.Margin = new System.Windows.Forms.Padding(2);
             this.btnMajorScaleCenter.Name = "btnMajorScaleCenter";
             this.btnMajorScaleCenter.Size = new System.Drawing.Size(21, 21);
             this.btnMajorScaleCenter.TabIndex = 14;
@@ -248,7 +248,7 @@
             // 
             this.btnMajorScaleDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMajorScaleDown.Location = new System.Drawing.Point(275, 89);
-            this.btnMajorScaleDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMajorScaleDown.Margin = new System.Windows.Forms.Padding(2);
             this.btnMajorScaleDown.Name = "btnMajorScaleDown";
             this.btnMajorScaleDown.Size = new System.Drawing.Size(21, 21);
             this.btnMajorScaleDown.TabIndex = 15;
@@ -260,7 +260,7 @@
             // 
             this.btnNonDiatonicDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNonDiatonicDown.Location = new System.Drawing.Point(275, 216);
-            this.btnNonDiatonicDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnNonDiatonicDown.Margin = new System.Windows.Forms.Padding(2);
             this.btnNonDiatonicDown.Name = "btnNonDiatonicDown";
             this.btnNonDiatonicDown.Size = new System.Drawing.Size(21, 21);
             this.btnNonDiatonicDown.TabIndex = 18;
@@ -272,7 +272,7 @@
             // 
             this.btnNonDiatonicCenter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNonDiatonicCenter.Location = new System.Drawing.Point(249, 216);
-            this.btnNonDiatonicCenter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnNonDiatonicCenter.Margin = new System.Windows.Forms.Padding(2);
             this.btnNonDiatonicCenter.Name = "btnNonDiatonicCenter";
             this.btnNonDiatonicCenter.Size = new System.Drawing.Size(21, 21);
             this.btnNonDiatonicCenter.TabIndex = 17;
@@ -284,7 +284,7 @@
             // 
             this.btnNonDiatonicUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNonDiatonicUp.Location = new System.Drawing.Point(224, 216);
-            this.btnNonDiatonicUp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnNonDiatonicUp.Margin = new System.Windows.Forms.Padding(2);
             this.btnNonDiatonicUp.Name = "btnNonDiatonicUp";
             this.btnNonDiatonicUp.Size = new System.Drawing.Size(21, 21);
             this.btnNonDiatonicUp.TabIndex = 16;
@@ -296,7 +296,7 @@
             // 
             this.btnMajorScaleStairs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnMajorScaleStairs.Location = new System.Drawing.Point(300, 89);
-            this.btnMajorScaleStairs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMajorScaleStairs.Margin = new System.Windows.Forms.Padding(2);
             this.btnMajorScaleStairs.Name = "btnMajorScaleStairs";
             this.btnMajorScaleStairs.Size = new System.Drawing.Size(21, 21);
             this.btnMajorScaleStairs.TabIndex = 19;
@@ -309,7 +309,7 @@
             this.btnNonDiatonicStairs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnNonDiatonicStairs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNonDiatonicStairs.Location = new System.Drawing.Point(300, 216);
-            this.btnNonDiatonicStairs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnNonDiatonicStairs.Margin = new System.Windows.Forms.Padding(2);
             this.btnNonDiatonicStairs.Name = "btnNonDiatonicStairs";
             this.btnNonDiatonicStairs.Size = new System.Drawing.Size(21, 21);
             this.btnNonDiatonicStairs.TabIndex = 20;
@@ -346,60 +346,54 @@
             // 
             // lblMajorScaleNotesPerfect
             // 
-            this.lblMajorScaleNotesPerfect.AutoSize = true;
-            this.lblMajorScaleNotesPerfect.Location = new System.Drawing.Point(125, 167);
+            this.lblMajorScaleNotesPerfect.Location = new System.Drawing.Point(100, 167);
             this.lblMajorScaleNotesPerfect.Name = "lblMajorScaleNotesPerfect";
-            this.lblMajorScaleNotesPerfect.Size = new System.Drawing.Size(13, 13);
+            this.lblMajorScaleNotesPerfect.Size = new System.Drawing.Size(40, 13);
             this.lblMajorScaleNotesPerfect.TabIndex = 26;
             this.lblMajorScaleNotesPerfect.Text = "0";
             this.lblMajorScaleNotesPerfect.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblMajorScaleNotesWrapped
             // 
-            this.lblMajorScaleNotesWrapped.AutoSize = true;
-            this.lblMajorScaleNotesWrapped.Location = new System.Drawing.Point(308, 147);
+            this.lblMajorScaleNotesWrapped.Location = new System.Drawing.Point(283, 147);
             this.lblMajorScaleNotesWrapped.Name = "lblMajorScaleNotesWrapped";
-            this.lblMajorScaleNotesWrapped.Size = new System.Drawing.Size(13, 13);
+            this.lblMajorScaleNotesWrapped.Size = new System.Drawing.Size(40, 13);
             this.lblMajorScaleNotesWrapped.TabIndex = 25;
             this.lblMajorScaleNotesWrapped.Text = "0";
             this.lblMajorScaleNotesWrapped.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblMajorScaleNotesPlayed
             // 
-            this.lblMajorScaleNotesPlayed.AutoSize = true;
-            this.lblMajorScaleNotesPlayed.Location = new System.Drawing.Point(125, 147);
+            this.lblMajorScaleNotesPlayed.Location = new System.Drawing.Point(100, 147);
             this.lblMajorScaleNotesPlayed.Name = "lblMajorScaleNotesPlayed";
-            this.lblMajorScaleNotesPlayed.Size = new System.Drawing.Size(13, 13);
+            this.lblMajorScaleNotesPlayed.Size = new System.Drawing.Size(40, 13);
             this.lblMajorScaleNotesPlayed.TabIndex = 24;
             this.lblMajorScaleNotesPlayed.Text = "0";
             this.lblMajorScaleNotesPlayed.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblNonDiatonicNotesPerfect
             // 
-            this.lblNonDiatonicNotesPerfect.AutoSize = true;
-            this.lblNonDiatonicNotesPerfect.Location = new System.Drawing.Point(128, 294);
+            this.lblNonDiatonicNotesPerfect.Location = new System.Drawing.Point(103, 294);
             this.lblNonDiatonicNotesPerfect.Name = "lblNonDiatonicNotesPerfect";
-            this.lblNonDiatonicNotesPerfect.Size = new System.Drawing.Size(13, 13);
+            this.lblNonDiatonicNotesPerfect.Size = new System.Drawing.Size(40, 13);
             this.lblNonDiatonicNotesPerfect.TabIndex = 32;
             this.lblNonDiatonicNotesPerfect.Text = "0";
             this.lblNonDiatonicNotesPerfect.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblNonDiatonicNotesWrapped
             // 
-            this.lblNonDiatonicNotesWrapped.AutoSize = true;
-            this.lblNonDiatonicNotesWrapped.Location = new System.Drawing.Point(308, 274);
+            this.lblNonDiatonicNotesWrapped.Location = new System.Drawing.Point(283, 274);
             this.lblNonDiatonicNotesWrapped.Name = "lblNonDiatonicNotesWrapped";
-            this.lblNonDiatonicNotesWrapped.Size = new System.Drawing.Size(13, 13);
+            this.lblNonDiatonicNotesWrapped.Size = new System.Drawing.Size(40, 13);
             this.lblNonDiatonicNotesWrapped.TabIndex = 31;
             this.lblNonDiatonicNotesWrapped.Text = "0";
             this.lblNonDiatonicNotesWrapped.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblNonDiatonicNotesPlayed
             // 
-            this.lblNonDiatonicNotesPlayed.AutoSize = true;
-            this.lblNonDiatonicNotesPlayed.Location = new System.Drawing.Point(128, 274);
+            this.lblNonDiatonicNotesPlayed.Location = new System.Drawing.Point(103, 274);
             this.lblNonDiatonicNotesPlayed.Name = "lblNonDiatonicNotesPlayed";
-            this.lblNonDiatonicNotesPlayed.Size = new System.Drawing.Size(13, 13);
+            this.lblNonDiatonicNotesPlayed.Size = new System.Drawing.Size(40, 13);
             this.lblNonDiatonicNotesPlayed.TabIndex = 30;
             this.lblNonDiatonicNotesPlayed.Text = "0";
             this.lblNonDiatonicNotesPlayed.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -445,10 +439,9 @@
             // 
             // lblMajorScaleNotesIgnored
             // 
-            this.lblMajorScaleNotesIgnored.AutoSize = true;
-            this.lblMajorScaleNotesIgnored.Location = new System.Drawing.Point(308, 167);
+            this.lblMajorScaleNotesIgnored.Location = new System.Drawing.Point(283, 167);
             this.lblMajorScaleNotesIgnored.Name = "lblMajorScaleNotesIgnored";
-            this.lblMajorScaleNotesIgnored.Size = new System.Drawing.Size(13, 13);
+            this.lblMajorScaleNotesIgnored.Size = new System.Drawing.Size(40, 13);
             this.lblMajorScaleNotesIgnored.TabIndex = 35;
             this.lblMajorScaleNotesIgnored.Text = "0";
             this.lblMajorScaleNotesIgnored.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -464,10 +457,9 @@
             // 
             // lblNonDiatonicNotesIgnored
             // 
-            this.lblNonDiatonicNotesIgnored.AutoSize = true;
-            this.lblNonDiatonicNotesIgnored.Location = new System.Drawing.Point(308, 294);
+            this.lblNonDiatonicNotesIgnored.Location = new System.Drawing.Point(283, 294);
             this.lblNonDiatonicNotesIgnored.Name = "lblNonDiatonicNotesIgnored";
-            this.lblNonDiatonicNotesIgnored.Size = new System.Drawing.Size(13, 13);
+            this.lblNonDiatonicNotesIgnored.Size = new System.Drawing.Size(40, 13);
             this.lblNonDiatonicNotesIgnored.TabIndex = 37;
             this.lblNonDiatonicNotesIgnored.Text = "0";
             this.lblNonDiatonicNotesIgnored.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -526,7 +518,7 @@
             this.Controls.Add(this.btnRefresh);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "Midi Device To Kalimba";
