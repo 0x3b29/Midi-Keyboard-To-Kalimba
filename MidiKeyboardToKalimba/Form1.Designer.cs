@@ -67,18 +67,18 @@
             this.label17 = new System.Windows.Forms.Label();
             this.lblNonDiatonicNotesIgnored = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
+            this.btnResetCounters = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnRefresh.Location = new System.Drawing.Point(11, 337);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(2);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(310, 21);
+            this.btnRefresh.Size = new System.Drawing.Size(150, 21);
             this.btnRefresh.TabIndex = 0;
-            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.Text = "Refresh Devices";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -473,11 +473,24 @@
             this.label19.TabIndex = 36;
             this.label19.Text = "Ignored Notes:";
             // 
+            // btnResetCounters
+            // 
+            this.btnResetCounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnResetCounters.Location = new System.Drawing.Point(173, 337);
+            this.btnResetCounters.Margin = new System.Windows.Forms.Padding(2);
+            this.btnResetCounters.Name = "btnResetCounters";
+            this.btnResetCounters.Size = new System.Drawing.Size(150, 21);
+            this.btnResetCounters.TabIndex = 38;
+            this.btnResetCounters.Text = "Reset Counters";
+            this.btnResetCounters.UseVisualStyleBackColor = true;
+            this.btnResetCounters.Click += new System.EventHandler(this.btnResetCounters_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(334, 369);
+            this.Controls.Add(this.btnResetCounters);
             this.Controls.Add(this.lblNonDiatonicNotesIgnored);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.lblMajorScaleNotesIgnored);
@@ -567,6 +580,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label lblNonDiatonicNotesIgnored;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button btnResetCounters;
     }
 }
 

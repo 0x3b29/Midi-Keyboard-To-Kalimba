@@ -27,6 +27,7 @@ namespace PlayKalimbaWithKeyboard
         {
             InitializeComponent();
             refreshMidiDevicesAndSerialPortsDropDowns();
+            updateNotesCounters();
         }
 
         private SerialPort _serialPort;
@@ -111,6 +112,20 @@ namespace PlayKalimbaWithKeyboard
             }
         }
 
+        private void UpdateButtonEnabledSafely(Button button, bool isEnabled)
+        {
+            if (button.InvokeRequired)
+            {
+                button.Invoke((MethodInvoker)delegate {
+                    button.Enabled = isEnabled;
+                });
+            }
+            else
+            {
+                button.Enabled = isEnabled;
+            }
+        }
+
         private void updateNotesCounters()
         {
             // Update major scale labels safely
@@ -124,6 +139,13 @@ namespace PlayKalimbaWithKeyboard
             UpdateLabelSafely(lblNonDiatonicNotesPerfect, nonDiatonicNotesPerfect.ToString());
             UpdateLabelSafely(lblNonDiatonicNotesWrapped, nonDiatonicNotesWrapped.ToString());
             UpdateLabelSafely(lblNonDiatonicNotesIgnored, nonDiatonicNotesIgnored.ToString());
+
+            // Calculate the sum of the counters
+            int sum = majorScaleNotesPlayed + majorScaleNotesPerfect + majorScaleNotesWrapped + majorScaleNotesIgnored
+                + nonDiatonicNotesPlayed + nonDiatonicNotesPerfect + nonDiatonicNotesWrapped + nonDiatonicNotesIgnored;
+
+            // Enable or disable the button safely
+            UpdateButtonEnabledSafely(btnResetCounters, sum > 0);
         }
 
         private void OnEventReceived(object sender, MidiEventReceivedEventArgs e)
@@ -629,6 +651,21 @@ namespace PlayKalimbaWithKeyboard
         private void btnNonDiatonicStairs_Click(object sender, EventArgs e)
         {
             _serialPort2.WriteLine("x;");
+        }
+
+        private void btnResetCounters_Click(object sender, EventArgs e)
+        {
+            majorScaleNotesPlayed = 0;
+            majorScaleNotesPerfect = 0;
+            majorScaleNotesWrapped = 0;
+            majorScaleNotesIgnored = 0;
+
+            nonDiatonicNotesPlayed = 0;
+            nonDiatonicNotesPerfect = 0;
+            nonDiatonicNotesWrapped = 0;
+            nonDiatonicNotesIgnored = 0;
+
+            updateNotesCounters();
         }
     }
 }
